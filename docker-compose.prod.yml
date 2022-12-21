@@ -1,21 +1,57 @@
 version: '3.8'
 
+networks:
+  isolation-network:
+    driver: bridge
+
 services:
-  web:
-    build: ./app
+  backend:
+    build: ./backend
     command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
-    ports:
-      - 8000:8000
+    # ports:
+    #   - 8000:8000
     env_file:
       - ./.env.prod
     depends_on:
       - database
+    networks:
+      - isolation-network
+    volumes:
+      - static_volume:/usr/src/app/staticfiles
   database:
     image: postgres:13.0-alpine
     volumes:
-      - db_data:/var/lib/postgresql/data/
+      - ./db_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=${SQL_USER}
+      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      - POSTGRES_DB=${SQL_DATABASE}
+    networks:
+      - isolation-network
+  predictor:
+    build: ./predictor
+    command: gunicorn app:app -w 4 -p ${PREDICTOR_PORT} --bind 0.0.0.0:${PREDICTOR_PORT}
+    volumes:
+      - ./predictor/:/usr/src/app/
+    ports:
+      - ${PREDICTOR_PORT}:${PREDICTOR_PORT}
     env_file:
-      - ./.env.prod.db
+      - ./.env
+    networks:
+      - isolation-network
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+    depends_on:
+      - backend
+      - predictor
+    networks:
+      - isolation-network
+    volumes:
+      - static_volume:/home/app/backend/static
+    
 
 volumes:
   db_data:
+  static_volume:

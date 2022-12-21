@@ -21,8 +21,8 @@ from rest_framework_swagger.views import get_swagger_view
 schema_view = get_swagger_view(title='NFT Predictor API')
 
 urlpatterns = [
-    url(r'^docs/', schema_view),
     path('admin/', admin.site.urls),
     path('api/auth/', include('users.urls')),
     path('api/predictor/', include('predictor.urls')),
+    url(r'^api/docs/', schema_view),
 ]
