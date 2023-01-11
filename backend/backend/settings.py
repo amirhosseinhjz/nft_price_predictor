@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_swagger',
+    'corsheaders',
     # Project apps
     'users',
     'predictor',
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -161,10 +163,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ITEM_IMAGE_SIZE = (300, 300)
 
 
-# SWAGGER_SETTINGS = {
-#     'SECURITY_DEFINITIONS': {
-#         'basic': {
-#             'type': 'basic'
-#         }
-#     }
-# }
+CORS_ALLOWED_ORIGINS = [
+"5.75.202.67:80",
+]
+
+CORS_ALLOW_METHODS = [
+'DELETE',
+'GET',
+'OPTIONS',
+'PATCH',
+'POST',
+'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+'accept',
+'accept-encoding',
+'authorization',
+'content-type',
+'dnt',
+'origin',
+'user-agent',
+'x-csrftoken',
+'x-requested-with',
+]
